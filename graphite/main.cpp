@@ -1,4 +1,5 @@
-#include "platform/win32/window.h"
+#include "core/engine.h"
+#include "utils/debug.h"
 #include <cstdlib>
 
 int WINAPI wWinMain(
@@ -7,15 +8,15 @@ int WINAPI wWinMain(
     PWSTR /*pCmdLine*/,
     int nCmdShow)
 {
-    MessageBox(nullptr, L"wWinMain called", L"Debug", MB_OK | MB_ICONINFORMATION);
-    Graphite::Platform::Window window;
+    GP_MSGBOX_INFO(L"Debug", L"wWinMain called");
+    Graphite::Core::Engine engine;
 
-    if (!window.Initialize(hInstance, nCmdShow))
+    if (!engine.Initialize(hInstance, nCmdShow))
     {
-        MessageBox(nullptr, L"Failed to initialize window", L"Error", MB_OK | MB_ICONERROR);
+        GP_MSGBOX_ERROR(L"Error", L"Failed to initialize the engine");
         return EXIT_FAILURE;
     }
 
-    window.MainLoop();
+    engine.Run();
     return EXIT_SUCCESS;
 }

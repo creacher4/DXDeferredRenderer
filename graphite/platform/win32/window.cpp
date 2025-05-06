@@ -1,4 +1,5 @@
 #include "window.h"
+#include "utils/debug.h"
 
 using namespace Graphite::Platform;
 
@@ -8,15 +9,22 @@ Window::~Window()
 {
     if (m_hwnd)
     {
-        DestroyWindow(m_hwnd);
+        DestroyWindow(m_hwnd); // destroy first
+        UnregisterClass(s_WindowClassName, m_hInstance);
     }
-    UnregisterClass(kWindowClassName, GetModuleHandle(nullptr));
 }
 
 bool Window::Initialize(
     HINSTANCE hInstance,
-    int nCmdShow)
+    int nCmdShow,
+    int width,
+    int height,
+    const wchar_t *title)
 {
+    m_width = width;
+    m_height = height;
+    m_title = title;
+
     if (!RegisterWindowClass(hInstance))
         return false;
     return CreateMainWindow(hInstance, nCmdShow);
@@ -30,11 +38,11 @@ bool Window::RegisterWindowClass(
     wc.style = CS_HREDRAW | CS_VREDRAW;
     wc.lpfnWndProc = Window::WindowProc;
     wc.hInstance = hInstance;
-    wc.lpszClassName = kWindowClassName;
+    wc.lpszClassName = s_WindowClassName;
 
     if (!RegisterClassEx(&wc))
     {
-        MessageBox(nullptr, L"RegisterClassEx failed", L"Error", MB_OK | MB_ICONERROR);
+        GP_MSGBOX_ERROR(L"Error", L"RegisterClassEx failed");
         return false;
     };
 
@@ -47,11 +55,11 @@ bool Window::CreateMainWindow(
 {
     m_hwnd = CreateWindowEx(
         0,
-        kWindowClassName,
-        L"Graphite Engine",
+        s_WindowClassName,
+        m_title,
         WS_OVERLAPPEDWINDOW,
         CW_USEDEFAULT, CW_USEDEFAULT,
-        1280, 720,
+        m_width, m_height,
         nullptr,
         nullptr,
         hInstance,
@@ -60,7 +68,7 @@ bool Window::CreateMainWindow(
 
     if (!m_hwnd)
     {
-        MessageBox(nullptr, L"Failed to create window", L"Error", MB_OK | MB_ICONERROR);
+        GP_MSGBOX_ERROR(L"Error", L"CreateWindowEx failed");
         return false;
     }
 
@@ -68,24 +76,6 @@ bool Window::CreateMainWindow(
     UpdateWindow(m_hwnd);
 
     return true;
-}
-
-void Window::MainLoop()
-{
-    MSG msg = {};
-    while (true)
-    {
-        while (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE))
-        {
-            if (msg.message == WM_QUIT)
-                return;
-
-            TranslateMessage(&msg);
-            DispatchMessage(&msg);
-        }
-
-        // whatever
-    }
 }
 
 LRESULT CALLBACK Window::WindowProc(
