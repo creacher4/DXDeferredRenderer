@@ -1,0 +1,25 @@
+# build folder
+build/
+*.obj
+*.pch
+*.pdb
+*.idb
+*.sdf
+*.ipch
+*.aps
+
+# visual studio
+.vscode/
+*.VC.db
+*.VC.opendb
+*.vcxproj.user
+
+# cmake
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+
+# logs
+logs/
+*.log
