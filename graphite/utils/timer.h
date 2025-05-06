@@ -2,19 +2,15 @@
 
 #include <cstdint>
 
-namespace Graphite::Utils
+class Timer
 {
-    class Timer
-    {
-    public:
-        Timer();
+public:
+    Timer();
 
-        void Start();
-        float GetDeltaTime();
+    void Start();
+    float GetDeltaTime();
 
-    private: // members
-        int64_t m_frequency = 0;
-        int64_t m_lastTime = 0;
-    };
-
-} // namespace Graphite::Utils
+private: // members
+    int64_t m_frequency = 0;
+    int64_t m_lastTime = 0;
+};

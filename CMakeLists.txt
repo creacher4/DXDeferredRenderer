@@ -26,7 +26,10 @@ target_compile_definitions(graphite PRIVATE
 )
 
 # link libraries
-# target_link_libraries(graphite PRIVATE
+target_link_libraries(graphite PRIVATE
+    d3d11
+    dxgi
+)
 
 # add stuff in the output directory
 # add_custom_command(TARGET graphite POST_BUILD

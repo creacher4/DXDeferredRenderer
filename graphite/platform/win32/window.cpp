@@ -1,8 +1,6 @@
 #include "window.h"
 #include "utils/debug.h"
 
-using namespace Graphite::Platform;
-
 Window::Window() = default;
 
 Window::~Window()
@@ -53,13 +51,19 @@ bool Window::CreateMainWindow(
     HINSTANCE hInstance,
     int nCmdShow)
 {
+    RECT rect = {0, 0, m_width, m_height};
+    AdjustWindowRect(&rect, WS_OVERLAPPEDWINDOW, FALSE);
+
+    int windowWidth = rect.right - rect.left;
+    int windowHeight = rect.bottom - rect.top;
+
     m_hwnd = CreateWindowEx(
         0,
         s_WindowClassName,
         m_title,
         WS_OVERLAPPEDWINDOW,
         CW_USEDEFAULT, CW_USEDEFAULT,
-        m_width, m_height,
+        windowWidth, windowHeight,
         nullptr,
         nullptr,
         hInstance,

@@ -1,8 +1,6 @@
 #include "timer.h"
 #include <Windows.h>
 
-using namespace Graphite::Utils;
-
 Timer::Timer()
 {
     QueryPerformanceFrequency(reinterpret_cast<LARGE_INTEGER *>(&m_frequency));

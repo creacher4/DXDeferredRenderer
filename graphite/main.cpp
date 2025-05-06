@@ -9,7 +9,7 @@ int WINAPI wWinMain(
     int nCmdShow)
 {
     GP_MSGBOX_INFO(L"Debug", L"wWinMain called");
-    Graphite::Core::Engine engine;
+    Engine engine;
 
     if (!engine.Initialize(hInstance, nCmdShow))
     {
@@ -18,5 +18,6 @@ int WINAPI wWinMain(
     }
 
     engine.Run();
+    engine.Shutdown();
     return EXIT_SUCCESS;
 }
