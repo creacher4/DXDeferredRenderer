@@ -1,6 +1,6 @@
-#include "engine.h"
+#include "core/engine.h"
 #include "utils/debug.h"
-#include "gfx/render_backend_factory.h"
+#include "gfx/factory/render_backend_factory.h"
 
 bool Engine::Initialize(
     HINSTANCE hInstance,

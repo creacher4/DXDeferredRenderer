@@ -1,15 +1,15 @@
-#include "dx11_render_backend.h"
+#include "gfx/backend/dx11/dx11.h"
 #include "utils/debug.h"
 #include <cassert>
 
-DX11RenderBackend::DX11RenderBackend() = default;
+DX11::DX11() = default;
 
-DX11RenderBackend::~DX11RenderBackend()
+DX11::~DX11()
 {
     Shutdown();
 }
 
-bool DX11RenderBackend::Initialize(HWND hwnd, int width, int height)
+bool DX11::Initialize(HWND hwnd, int width, int height)
 {
     // create device and swap chain
     DXGI_SWAP_CHAIN_DESC swapChainDesc = {};
@@ -23,6 +23,9 @@ bool DX11RenderBackend::Initialize(HWND hwnd, int width, int height)
     swapChainDesc.SampleDesc.Quality = 0;
     swapChainDesc.Windowed = TRUE;
     swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
+
+    /// to use later
+    m_swapChainDesc = swapChainDesc;
 
     UINT createFlags = 0;
 #if defined(_DEBUG)
@@ -53,6 +56,15 @@ bool DX11RenderBackend::Initialize(HWND hwnd, int width, int height)
         GP_MSGBOX_ERROR(L"Error", L"D3D11CreateDeviceAndSwapChain failed");
         return false;
     }
+    else
+    {
+        GP_DEBUG("[DX11::Initialize] - Device and Swap Chain created");
+    }
+
+    m_textureManager.Initialize(m_device.Get());
+    GP_DEBUG("[DX11::Initialize] - Texture Manager initialized");
+    m_gbuffer.Initialize(&m_textureManager, width, height);
+    GP_DEBUG("[DX11::Initialize] - GBuffer initialized");
 
     // create back buffer render target view
     Microsoft::WRL::ComPtr<ID3D11Texture2D> backBuffer;
@@ -69,11 +81,15 @@ bool DX11RenderBackend::Initialize(HWND hwnd, int width, int height)
         GP_MSGBOX_ERROR(L"Error", L"CreateRenderTargetView failed");
         return false;
     }
+    else
+    {
+        GP_DEBUG("[DX11::Initialize] - Back buffer render target view created");
+    }
 
     return true;
 }
 
-void DX11RenderBackend::SetViewport(int width, int height)
+void DX11::SetViewport(int width, int height)
 {
     assert(m_context);
 
@@ -88,13 +104,13 @@ void DX11RenderBackend::SetViewport(int width, int height)
     m_context->RSSetViewports(1, &viewport);
 }
 
-void DX11RenderBackend::BeginFrame()
+void DX11::BeginFrame()
 {
     assert(m_context && m_renderTargetView);
     m_context->OMSetRenderTargets(1, m_renderTargetView.GetAddressOf(), nullptr);
 }
 
-void DX11RenderBackend::Clear(float r, float g, float b, float a)
+void DX11::Clear(float r, float g, float b, float a)
 {
     assert(m_context && m_renderTargetView);
 
@@ -102,7 +118,7 @@ void DX11RenderBackend::Clear(float r, float g, float b, float a)
     m_context->ClearRenderTargetView(m_renderTargetView.Get(), clearColor);
 }
 
-void DX11RenderBackend::EndFrame()
+void DX11::EndFrame()
 {
     assert(m_swapChain);
 
@@ -113,10 +129,42 @@ void DX11RenderBackend::EndFrame()
     }
 }
 
-void DX11RenderBackend::Shutdown()
+void DX11::Shutdown()
 {
+    if (!m_device)
+        return;
+
+    m_gbuffer.Shutdown(&m_textureManager);
+    m_textureManager.Shutdown();
+    GP_DEBUG("[DX11::Shutdown] - Texture Manager and GBuffer shut down");
+
     m_renderTargetView.Reset();
     m_swapChain.Reset();
     m_context.Reset();
     m_device.Reset();
+
+    GP_DEBUG("[DX11::Shutdown] - Resources Released");
+}
+
+void DX11::BeginGBufferPass()
+{
+    m_gbuffer.BindForWriting(m_context.Get());
+    GP_DEBUG("[DX11::BeginGBufferPass] - Bound GBuffer targets");
+}
+
+void DX11::BeginLightingPass()
+{
+    m_context->OMSetRenderTargets(1, m_renderTargetView.GetAddressOf(), nullptr);
+    SetViewport(m_swapChainDesc.BufferDesc.Width, m_swapChainDesc.BufferDesc.Height);
+    GP_DEBUG("[DX11::BeginLightingPass] - Bound back buffer render target view");
+}
+
+bool DX11::CreateTexture(TextureHandle handle, const TextureDesc &desc)
+{
+    return m_textureManager.CreateTexture(handle, desc);
+}
+
+void DX11::DestroyTexture(TextureHandle handle)
+{
+    m_textureManager.DestroyTexture(handle);
 }
