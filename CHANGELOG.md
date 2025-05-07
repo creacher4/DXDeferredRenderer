@@ -9,14 +9,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Named handles for the GBuffer textures.
-- GPU buffer support with vertex/index buffer creation.
-- Basic draw command and buffer binding in `RenderBackend`.
+- G-Buffer support with named texture attachments.
+- GPU resource management for vertex, index, and constant buffers.
+- Low-level draw and buffer-binding calls in the rendering API.
+- Conditional debug output (enabled only in debug builds)
+- Automatic handle allocator for buffer and texture IDs
+- Configurable rendering backend selection
+- Option to supply a custom window to the engine
 
 ### Changed
 
-- GBuffer shutdown method now uses texture manager directly.
-- `RenderBackend` extended with buffer and draw functionality.
+- G-Buffer attachments are cleared at the start of each pass.
+- Rendering interface expanded to cover buffer and draw operations.
+- Window initialization defaults now defined as compile-time constants.
+
+### Fixed
+
+- Buffer manager now correctly removes resources to prevent leaks.
+- Improved error logging for DirectX initialization in debug mode.
 
 ## [0.0.4] - 2025-05-07
 

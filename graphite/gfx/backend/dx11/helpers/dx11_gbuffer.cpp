@@ -50,6 +50,17 @@ void DX11GBuffer::BindForWriting(ID3D11DeviceContext *context)
 
     context->OMSetRenderTargets(3, rtvs, depth->dsv.Get());
 
+    // clear targets
+    const float clearColor[4] = {0.0f, 0.0f, 0.0f, 1.0f};
+    context->ClearRenderTargetView(albedo->rtv.Get(), clearColor);
+    context->ClearRenderTargetView(normal->rtv.Get(), clearColor);
+    context->ClearRenderTargetView(orm->rtv.Get(), clearColor);
+    context->ClearDepthStencilView(
+        depth->dsv.Get(),
+        D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL,
+        1.0f,
+        0);
+
     D3D11_VIEWPORT viewport = {};
     viewport.Width = static_cast<float>(albedo->desc.width);
     viewport.Height = static_cast<float>(albedo->desc.height);

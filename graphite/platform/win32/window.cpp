@@ -19,6 +19,7 @@ bool Window::Initialize(
     int height,
     const wchar_t *title)
 {
+    m_hInstance = hInstance;
     m_width = width;
     m_height = height;
     m_title = title;

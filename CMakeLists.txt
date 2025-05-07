@@ -47,3 +47,8 @@ target_link_libraries(graphite PRIVATE
 #     COMMAND ${CMAKE_COMMAND} -E copy_directory
 #         ${CMAKE_CURRENT_SOURCE_DIR}/res $<TARGET_FILE_DIR:graphite>/res
 # )
+
+add_custom_command(TARGET graphite POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+        ${CMAKE_SOURCE_DIR}/assets $<TARGET_FILE_DIR:graphite>/assets
+)

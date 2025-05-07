@@ -1,12 +1,21 @@
 #include "core/engine.h"
 #include "utils/debug.h"
 #include "gfx/factory/render_backend_factory.h"
+#include <utility>
 
 bool Engine::Initialize(
     HINSTANCE hInstance,
     int nCmdShow)
 {
-    m_window = std::make_unique<Window>();
+    return Initialize(std::make_unique<Window>(), hInstance, nCmdShow);
+}
+
+bool Engine::Initialize(
+    std::unique_ptr<Window> window,
+    HINSTANCE hInstance,
+    int nCmdShow)
+{
+    m_window = std::move(window);
     if (!m_window->Initialize(hInstance, nCmdShow))
         return false;
 
@@ -17,7 +26,7 @@ bool Engine::Initialize(
     int height = m_window->GetHeight();
 
     // initialize the render backend
-    m_renderBackend = CreateRenderBackend();
+    m_renderBackend = CreateRenderBackend(); // default to DX11
     if (!m_renderBackend->Initialize(m_window->GetHandle(), width, height))
     {
         GP_MSGBOX_ERROR(L"Error", L"Render backend initialization failed");

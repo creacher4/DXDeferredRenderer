@@ -62,7 +62,8 @@ bool DX11BufferManager::CreateBuffer(BufferHandle handle, const BufferDesc &desc
 
 void DX11BufferManager::DestroyBuffer(BufferHandle handle)
 {
-    if (m_buffers.count(handle) == 0)
+    auto erased = m_buffers.erase(handle);
+    if (erased == 0)
     {
         GP_DEBUG_STR("DestroyBuffer failed: handle not found " + std::to_string(handle));
     }

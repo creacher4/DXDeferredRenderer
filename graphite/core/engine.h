@@ -8,7 +8,11 @@
 class Engine
 {
 public:
+    // engine will either create its own window
     bool Initialize(HINSTANCE hInstance, int nCmdShow);
+    // or have a dependency injected window where the caller provides the window
+    bool Initialize(std::unique_ptr<Window> window, HINSTANCE hInstance, int nCmdShow);
+
     void Run();
     void Tick(float dt);
 

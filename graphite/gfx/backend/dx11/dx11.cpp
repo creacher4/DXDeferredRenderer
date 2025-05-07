@@ -53,6 +53,9 @@ bool DX11::Initialize(HWND hwnd, int width, int height)
 
     if (FAILED(hr))
     {
+#ifdef _DEBUG
+        GP_DEBUG_STR("[DX11::Initialize] - D3D11CreateDeviceAndSwapChain failed with code " + std::to_string(hr));
+#endif
         GP_MSGBOX_ERROR(L"Error", L"D3D11CreateDeviceAndSwapChain failed");
         return false;
     }
@@ -80,6 +83,9 @@ bool DX11::Initialize(HWND hwnd, int width, int height)
     hr = m_device->CreateRenderTargetView(backBuffer.Get(), nullptr, m_renderTargetView.GetAddressOf());
     if (FAILED(hr))
     {
+#ifdef _DEBUG
+        GP_DEBUG_STR("[DX11::Initialize] - CreateRenderTargetView failed with code " + std::to_string(hr));
+#endif
         GP_MSGBOX_ERROR(L"Error", L"CreateRenderTargetView failed");
         return false;
     }
@@ -125,6 +131,14 @@ void DX11::EndFrame()
     assert(m_swapChain);
 
     HRESULT hr = m_swapChain->Present(1, 0);
+
+#ifdef _DEBUG
+    if (FAILED(hr))
+    {
+        GP_DEBUG_STR("[DX11::EndFrame] - Present failed with code " + std::to_string(hr));
+    }
+#endif
+
     if (FAILED(hr))
     {
         GP_MSGBOX_ERROR(L"Error", L"Present failed");

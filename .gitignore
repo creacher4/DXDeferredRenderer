@@ -2,7 +2,6 @@
 build/
 *.obj
 *.pch
-*.pdb
 *.idb
 *.sdf
 *.ipch
@@ -23,3 +22,6 @@ Makefile
 # logs
 logs/
 *.log
+
+# assets
+assets/
