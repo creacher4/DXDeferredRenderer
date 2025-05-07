@@ -134,7 +134,7 @@ void DX11::Shutdown()
     if (!m_device)
         return;
 
-    m_gbuffer.Shutdown(&m_textureManager);
+    m_gbuffer.Shutdown();
     m_textureManager.Shutdown();
     GP_DEBUG("[DX11::Shutdown] - Texture Manager and GBuffer shut down");
 

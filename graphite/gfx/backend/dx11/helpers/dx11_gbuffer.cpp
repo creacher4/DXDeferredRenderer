@@ -4,23 +4,36 @@ bool DX11GBuffer::Initialize(DX11TextureManager *texManager, int width, int heig
 {
     m_texManager = texManager;
 
-    TextureDesc rt = {width, height, TextureFormat::R8G8B8A8_UNORM, TextureUsage::RENDER_TARGET | TextureUsage::SHADER_RESOURCE, 1};
+    TextureDesc rt = {
+        static_cast<uint32_t>(width),
+        static_cast<uint32_t>(height),
+        TextureFormat::R8G8B8A8_UNORM,
+        TextureUsage::RENDER_TARGET | TextureUsage::SHADER_RESOURCE,
+        1};
     texManager->CreateTexture(m_albedo, rt);
     texManager->CreateTexture(m_normal, rt);
     texManager->CreateTexture(m_orm, rt);
 
-    TextureDesc depth = {width, height, TextureFormat::D24_UNORM_S8_UINT, TextureUsage::DEPTH_STENCIL, 1};
+    TextureDesc depth = {
+        static_cast<uint32_t>(width),
+        static_cast<uint32_t>(height),
+        TextureFormat::D24_UNORM_S8_UINT,
+        TextureUsage::DEPTH_STENCIL,
+        1};
     texManager->CreateTexture(m_depth, depth);
 
     return true;
 }
 
-void DX11GBuffer::Shutdown(DX11TextureManager *texManager)
+void DX11GBuffer::Shutdown()
 {
-    texManager->DestroyTexture(m_albedo);
-    texManager->DestroyTexture(m_normal);
-    texManager->DestroyTexture(m_orm);
-    texManager->DestroyTexture(m_depth);
+    if (!m_texManager)
+        return;
+
+    m_texManager->DestroyTexture(m_albedo);
+    m_texManager->DestroyTexture(m_normal);
+    m_texManager->DestroyTexture(m_orm);
+    m_texManager->DestroyTexture(m_depth);
 }
 
 void DX11GBuffer::BindForWriting(ID3D11DeviceContext *context)

@@ -74,6 +74,8 @@ void Engine::Tick(float dt)
 
     // update the window
     m_renderBackend->BeginFrame();
+    m_renderBackend->BeginGBufferPass();
+    m_renderBackend->BeginLightingPass();
     m_renderBackend->Clear(0.2f, 0.2f, 0.2f, 1.0f); // clear to blue
     m_renderBackend->EndFrame();
 }
