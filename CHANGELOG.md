@@ -9,11 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Named handles for the GBuffer textures
+- Named handles for the GBuffer textures.
+- GPU buffer support with vertex/index buffer creation.
+- Basic draw command and buffer binding in `RenderBackend`.
 
 ### Changed
 
-- GBuffer shutdown method now uses texture manager directly
+- GBuffer shutdown method now uses texture manager directly.
+- `RenderBackend` extended with buffer and draw functionality.
 
 ## [0.0.4] - 2025-05-07
 

@@ -65,6 +65,8 @@ bool DX11::Initialize(HWND hwnd, int width, int height)
     GP_DEBUG("[DX11::Initialize] - Texture Manager initialized");
     m_gbuffer.Initialize(&m_textureManager, width, height);
     GP_DEBUG("[DX11::Initialize] - GBuffer initialized");
+    m_bufferManager.Initialize(m_device.Get());
+    GP_DEBUG("[DX11::Initialize] - Buffer Manager initialized");
 
     // create back buffer render target view
     Microsoft::WRL::ComPtr<ID3D11Texture2D> backBuffer;
@@ -136,7 +138,8 @@ void DX11::Shutdown()
 
     m_gbuffer.Shutdown();
     m_textureManager.Shutdown();
-    GP_DEBUG("[DX11::Shutdown] - Texture Manager and GBuffer shut down");
+    m_bufferManager.Shutdown();
+    GP_DEBUG("[DX11::Shutdown] - Texture Manager, GBuffer and Buffer Manager shut down");
 
     m_renderTargetView.Reset();
     m_swapChain.Reset();
@@ -167,4 +170,49 @@ bool DX11::CreateTexture(TextureHandle handle, const TextureDesc &desc)
 void DX11::DestroyTexture(TextureHandle handle)
 {
     m_textureManager.DestroyTexture(handle);
+}
+
+bool DX11::CreateBuffer(BufferHandle handle, const BufferDesc &desc, const void *initialData)
+{
+    return m_bufferManager.CreateBuffer(handle, desc, initialData);
+}
+
+void DX11::DestroyBuffer(BufferHandle handle)
+{
+    m_bufferManager.DestroyBuffer(handle);
+}
+
+// stub
+void DX11::BindVertexBuffer(BufferHandle handle, uint32_t stride, uint32_t offset)
+{
+    DX11Buffer *buffer = m_bufferManager.GetBuffer(handle);
+    if (!buffer)
+    {
+        GP_DEBUG_STR("BindVertexBuffer failed: buffer not found " + std::to_string(handle));
+        return;
+    }
+
+    ID3D11Buffer *vb = buffer->buffer.Get();
+    m_context->IASetVertexBuffers(0, 1, &vb, &stride, &offset);
+}
+
+// stub
+void DX11::BindIndexBuffer(BufferHandle handle, IndexFormat format, uint32_t offset)
+{
+    DX11Buffer *buffer = m_bufferManager.GetBuffer(handle);
+    if (!buffer)
+    {
+        GP_DEBUG_STR("BindIndexBuffer failed: buffer not found " + std::to_string(handle));
+        return;
+    }
+
+    DXGI_FORMAT dxgiFormat = (format == IndexFormat::UINT16) ? DXGI_FORMAT_R16_UINT : DXGI_FORMAT_R32_UINT;
+    ID3D11Buffer *ib = buffer->buffer.Get();
+    m_context->IASetIndexBuffer(ib, dxgiFormat, offset);
+}
+
+// stub
+void DX11::DrawIndexed(uint32_t indexCount, uint32_t startIndex, int32_t baseVertex)
+{
+    m_context->DrawIndexed(indexCount, startIndex, baseVertex);
 }

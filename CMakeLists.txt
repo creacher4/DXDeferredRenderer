@@ -16,19 +16,30 @@ add_executable(graphite WIN32 ${GRAPHITE_SRC})
 # include directories
 target_include_directories(graphite PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/graphite
+    ${CMAKE_CURRENT_SOURCE_DIR}/external/glm
+    ${CMAKE_CURRENT_SOURCE_DIR}/external/entt/single_include
 )
+
+# add external libraries
+add_subdirectory(external/assimp)
 
 # global def
 target_compile_definitions(graphite PRIVATE
     WIN32_LEAN_AND_MEAN
     UNICODE
     _UNICODE
+
+    # glm cfg
+    GLM_FORCE_RADIANS
+    GLM_FORCE_DEPTH_ZERO_TO_ONE
+    GLM_ENABLE_EXPERIMENTAL
 )
 
 # link libraries
 target_link_libraries(graphite PRIVATE
     d3d11
     dxgi
+    assimp
 )
 
 # add stuff in the output directory
